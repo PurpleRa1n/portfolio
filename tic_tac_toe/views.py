@@ -65,8 +65,16 @@ class GameLogView(views.BaseView):
 
     @login_required
     async def get(self):
+        """
+        Returns a game user stats with steps and timestamps.
+        """
         game_id: int = int(self.request.match_info['id'])
-        await self.get_object_or_404(Game, game_id)
+        game: Game = await self.get_object_or_404(Game, game_id)
+        if game.user_id != self.request.user.id:
+            return json_response(
+                data={'error': TicTacToeErrors.not_user_game.value},
+                status=HTTPStatus.BAD_REQUEST
+            )
         game_logs = await GameLog.query.where(game_id == game_id).gino.all()
         data = GameLogSchema().dump(game_logs, many=True)
         return json_response(data=data, status=HTTPStatus.OK)
