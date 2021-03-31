@@ -40,3 +40,7 @@ def get_database_dsn(is_migration: bool = False) -> str:
         f'{engine}://{db_config["USER"]}:{db_config["PASSWORD"]}'
         f'@{db_config["HOST"]}:{db_config["PORT"]}/{db_config["NAME"]}'
     )
+
+
+def get_database_name() -> str:
+    return settings.DATABASES['DEFAULT']['NAME']
