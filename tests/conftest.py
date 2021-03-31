@@ -3,12 +3,12 @@ from http import HTTPStatus
 import pytest
 from alembic.command import upgrade
 from tests.constants import Urls, CREDENTIALS, CREDENTIALS2
-from tests.utils import tmp_database, alembic_config_from_url
+from tests.utils import tmp_database
 from tests.validators import validate_type
 from yarl import URL
 
 from core.app import create_app
-from core.database.utils import get_database_dsn
+from core.database.utils import get_database_dsn, alembic_config_from_url
 
 _TEMPLATE_DB_NAME: str = 'template'
 _MIGRATIONS_POSITION: str = 'head'

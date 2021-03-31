@@ -6,8 +6,6 @@ from aiohttp import web
 from aiohttp.web_exceptions import HTTPNotFound
 from marshmallow import ValidationError
 
-from auth.decorators import login_required
-
 
 class BaseView(web.View):
     schema_class = None
@@ -53,6 +51,5 @@ class BaseView(web.View):
 
 class HealthCheckView(web.View):
 
-    @login_required
     async def get(self):
         return web.json_response(status=http.HTTPStatus.OK)
