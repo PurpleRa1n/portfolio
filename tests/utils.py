@@ -10,7 +10,7 @@ from configargparse import Namespace
 from sqlalchemy_utils import create_database, drop_database
 from yarl import URL
 
-PROJECT_PATH = Path(__file__).parent.parent.parent.resolve()
+PROJECT_PATH = Path(__file__).parent.parent.resolve()
 _ALEMBIC_DSN_KEY = 'sqlalchemy.url'
 
 
@@ -20,8 +20,11 @@ def make_alembic_config(cmd_opts: Union[Namespace, SimpleNamespace], base_path: 
 
     config = Config(file_=cmd_opts.config, ini_section=cmd_opts.name, cmd_opts=cmd_opts)
 
-    if cmd_opts.pg_url:
-        config.set_main_option(_ALEMBIC_DSN_KEY, cmd_opts.pg_url)
+    alembic_location = config.get_main_option('script_location')
+    if not os.path.isabs(alembic_location):
+        config.set_main_option('script_location', os.path.join(base_path, alembic_location))
+    if cmd_opts.db_dsn:
+        config.set_main_option(_ALEMBIC_DSN_KEY, cmd_opts.db_dsn)
 
     return config
 

@@ -9,6 +9,7 @@ AUTH_TOKEN_PREFIX = 'Bearer '
 
 MIDDLEWARES = [
     'auth.middlewares.auth_middleware',
+    'core.middlewares.error_middleware',
 ]
 
 APP_HOST = "0.0.0.0"
