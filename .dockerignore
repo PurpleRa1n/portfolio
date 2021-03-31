@@ -1,0 +1,7 @@
+.env
+.dockerignore
+.git
+.gitignore
+.gitlab-ci.yml
+.idea
+.pytest_cache
