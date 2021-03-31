@@ -1,4 +1,5 @@
 import http
+import traceback
 from typing import Callable, Awaitable
 
 from aiohttp.web_exceptions import HTTPMethodNotAllowed, HTTPNotFound
@@ -17,10 +18,10 @@ async def error_middleware(
         response: Response = await handler(request)
     except ValidationError as e:
         response = json_response(data={'error': e.messages}, status=http.HTTPStatus.BAD_REQUEST)
-    except HTTPMethodNotAllowed as e:
+    except HTTPMethodNotAllowed:
         response = json_response(data={'error': 'Method Not Allowed'}, status=http.HTTPStatus.BAD_REQUEST)
-    except HTTPNotFound as e:
+    except HTTPNotFound:
         response = json_response(data={'error': 'Required url not founds'}, status=http.HTTPStatus.NOT_FOUND)
-    except Exception as e:
-        response = json_response(status=http.HTTPStatus.INTERNAL_SERVER_ERROR)
+    except Exception:
+        response = json_response(data={'error': traceback.format_exc()}, status=http.HTTPStatus.INTERNAL_SERVER_ERROR)
     return response
