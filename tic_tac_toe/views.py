@@ -1,13 +1,14 @@
 from http import HTTPStatus
-from typing import Dict
+from typing import Dict, List, Tuple
 
 from aiohttp.web import json_response
 
 from auth.decorators import login_required
 from core import views
-from tic_tac_toe.enums import TicTacToeErrors
+from core.database.orm import db
+from tic_tac_toe.enums import TicTacToeErrors, GameResultEnum
 from tic_tac_toe.models import Game, GameLog
-from tic_tac_toe.schemas import GameSchema, GameMoveSchema, GameLogSchema
+from tic_tac_toe.schemas import GameSchema, GameMoveSchema, GameLogSchema, UserGameStats
 from tic_tac_toe.services.game import game_service
 
 
@@ -68,4 +69,28 @@ class GameLogView(views.BaseView):
             )
         game_logs = await GameLog.query.where(game_id == game_id).gino.all()
         data = GameLogSchema().dump(game_logs, many=True)
+        return json_response(data=data, status=HTTPStatus.OK)
+
+
+class UserGameStatsView(views.BaseView):
+
+    @login_required
+    async def get(self):
+        """
+        Returns a user game stats grouped by result.
+        """
+        user_id: int = self.request.user.id
+        game_stats: List[Tuple] = (
+            await db.select([
+                Game.result,
+                db.func.count(Game.result)
+            ])
+            .where(Game.user_id == user_id)
+            .where(Game.result != GameResultEnum.pending.value)
+            .group_by(Game.result).gino.all()
+        )
+        data = []
+        if game_stats:
+            stats = [{'result': GameResultEnum(gs[0]).name, 'score': gs[1]} for gs in game_stats]
+            data = UserGameStats().dump(stats, many=True)
         return json_response(data=data, status=HTTPStatus.OK)

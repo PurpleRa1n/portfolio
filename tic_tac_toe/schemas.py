@@ -25,3 +25,8 @@ class GameMoveSchema(marshmallow.Schema):
 class GameLogSchema(marshmallow.Schema):
     created_at = marshmallow.fields.DateTime(required=True)
     field = marshmallow.fields.Nested(FieldSchema, required=True)
+
+
+class UserGameStats(marshmallow.Schema):
+    result = marshmallow.fields.Str(required=True)
+    score = marshmallow.fields.Int(required=True)

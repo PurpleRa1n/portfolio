@@ -5,6 +5,7 @@ import pytest
 from tests.constants import Urls
 from tests.tic_tac_toe import constants
 from tic_tac_toe.constants import EMPTY_BOARD
+from tic_tac_toe.enums import GameResultEnum
 from tic_tac_toe.models import Game, GameLog
 from tic_tac_toe.schemas import GameSchema
 from tic_tac_toe.services.tic_tac_toe import tic_tac_toe_service
@@ -60,7 +61,7 @@ async def finished_game(api_client, user):
     for step in steps:
         row, col, player_move = step
         board = await process_step(row, col, game, board, player_move)
-    await game.update(active=False).apply()
+    await game.update(active=False, result=GameResultEnum.player.value).apply()
     game_data = GameSchema().dump(game)
 
     yield game_data

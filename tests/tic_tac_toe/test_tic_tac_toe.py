@@ -1,10 +1,11 @@
-import http
+from http import HTTPStatus
 
 from tests import constants
+from tests.constants import Urls
 from tests.tic_tac_toe.utils import get_board_filled_cell
 from tests.validators import validate_error_msg, validate_type
 from tic_tac_toe.constants import PLAYER_VALUE
-from tic_tac_toe.enums import TicTacToeErrors
+from tic_tac_toe.enums import TicTacToeErrors, GameResultEnum
 from tic_tac_toe.services.tic_tac_toe import tic_tac_toe_service
 
 
@@ -26,11 +27,11 @@ class TestTicTacToeGame:
 
     async def test_create_game_without_user_error(self, api_client):
         response = await api_client.post(constants.Urls.tic_tac_toe.value)
-        assert response.status == http.HTTPStatus.UNAUTHORIZED
+        assert response.status == HTTPStatus.UNAUTHORIZED
 
     async def test_create_game_success(self, api_client, token_hdr):
         response = await api_client.post(constants.Urls.tic_tac_toe.value, headers=token_hdr)
-        assert response.status == http.HTTPStatus.OK
+        assert response.status == HTTPStatus.OK
         response_data = await response.json()
         assert True is response_data['active']
 
@@ -38,7 +39,7 @@ class TestTicTacToeGame:
         initial_depth = len(tic_tac_toe_service._empty_cells(game['field']['board']))
         payload = self.get_valid_payload(game['field']['board'])
         response = await api_client.patch(self.get_game_patch_url(game['id']), headers=token_hdr, json=payload)
-        assert response.status == http.HTTPStatus.OK
+        assert response.status == HTTPStatus.OK
         response_data = await response.json()
         depth = len(tic_tac_toe_service._empty_cells(response_data['field']['board']))
         # initial_depth - 2 - because player and computer make moves
@@ -68,7 +69,7 @@ class TestTicTacToeGame:
     async def test_game_step_with_invalid_id_error(self, api_client, token_hdr, game_with_step):
         payload = self.get_valid_payload(game_with_step['field']['board'])
         response = await api_client.patch(self.get_game_patch_url(-1), headers=token_hdr, json=payload)
-        assert response.status == http.HTTPStatus.NOT_FOUND
+        assert response.status == HTTPStatus.NOT_FOUND
 
     async def test_game_stats_success(self, api_client, token_hdr, finished_game):
         response = await api_client.get(self.get_game_get_stats_url(finished_game['id']), headers=token_hdr)
@@ -82,4 +83,17 @@ class TestTicTacToeGame:
 
     async def test_game_stats_with_invalid_id_error(self, api_client, token_hdr, finished_game):
         response = await api_client.get(self.get_game_get_stats_url(-1), headers=token_hdr)
-        assert response.status == http.HTTPStatus.NOT_FOUND
+        assert response.status == HTTPStatus.NOT_FOUND
+
+    async def test_user_game_stats_success(self, api_client, token_hdr, finished_game):
+        response = await api_client.get(Urls.tic_tac_toe_user_stats.value, headers=token_hdr)
+        assert response.status == HTTPStatus.OK
+        response_data = await response.json()
+        exp_data = [{'score': 1, 'result': GameResultEnum.player.name}]
+        assert exp_data == response_data
+
+    async def test_user_game_stats_empty_stat(self, api_client, token_hdr):
+        response = await api_client.get(Urls.tic_tac_toe_user_stats.value, headers=token_hdr)
+        assert response.status == HTTPStatus.OK
+        response_data = await response.json()
+        assert response_data == []
