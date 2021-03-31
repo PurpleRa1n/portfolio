@@ -1,0 +1,38 @@
+pep8:
+  full: true
+  options:
+    max-line-length: 120
+  disable:
+    - N806
+    - W605
+
+pylint:
+  disable:
+    - line-too-long  # Already checked by pep8
+    - invalid-name
+    - too-few-public-methods
+    - too-many-ancestors
+    - no-self-use
+    - bad-inline-option
+    - arguments-differ
+    - too-many-arguments
+    - unused-wildcard-import
+    - invalid-envvar-default
+    - invalid escape sequence '\d'
+
+pyflakes:
+  run: true
+  disable:
+    - F405
+    - F401
+    - F821
+
+dodgy:
+  run: true
+
+mccabe:
+  run: true
+
+ignore-patterns:
+  - .*tests/.+
+  - alembic/*
