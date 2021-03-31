@@ -7,8 +7,10 @@ from aiohttp import web
 from aiohttp.web_app import Application
 from yarl import URL
 
+from core import settings
 from core.database.orm import db
 from core.database.utils import get_gino_database_config
+from core.utils.module_loading import import_string
 
 PROJ_ROOT = pathlib.Path(__file__).parent.parent
 
@@ -26,7 +28,7 @@ def _init_db(app: Application, database_url: str) -> Application:
     return app
 
 
-def _get_application() -> Application:
+def _create_app() -> Application:
     """
     Returns web application instance.
     """
@@ -34,10 +36,16 @@ def _get_application() -> Application:
     return app
 
 
+def _init_middlewares(app: Application):
+    app.middlewares.extend([import_string(path) for path in settings.MIDDLEWARES])
+    return app
+
+
 def create_app(database_dsn: str) -> Application:
     """
     The main entry point for creating a web application and configuring it.
     """
-    app: Application = _get_application()
+    app: Application = _create_app()
     app = _init_db(app, database_url=database_dsn)
+    app = _init_middlewares(app)
     return app
