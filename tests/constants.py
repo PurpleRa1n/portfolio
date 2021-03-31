@@ -20,3 +20,4 @@ class Urls(Enum):
     registration = '/api/v1/auth/registration/'
     health_check = '/health-check/'
     tic_tac_toe = '/api/v1/tic-tac-toe/'
+    tic_tac_toe_stats = '/api/v1/tic-tac-toe/{id}/stats/'

@@ -2,7 +2,7 @@ import http
 
 from tests import constants
 from tests.tic_tac_toe.utils import get_board_filled_cell
-from tests.validators import validate_error_msg
+from tests.validators import validate_error_msg, validate_type
 from tic_tac_toe.constants import PLAYER_VALUE
 from tic_tac_toe.enums import TicTacToeErrors
 from tic_tac_toe.services.tic_tac_toe import tic_tac_toe_service
@@ -68,4 +68,18 @@ class TestTicTacToeGame:
     async def test_game_step_with_invalid_id_error(self, api_client, token_hdr, game_with_step):
         payload = self.get_valid_payload(game_with_step['field']['board'])
         response = await api_client.patch(self.get_game_patch_url(-1), headers=token_hdr, json=payload)
+        assert response.status == http.HTTPStatus.NOT_FOUND
+
+    async def test_game_stats_success(self, api_client, token_hdr, finished_game):
+        response = await api_client.get(self.get_game_get_stats_url(finished_game['id']), headers=token_hdr)
+        response_data = await response.json()
+        exp_stat_entity = {
+            'created_at': validate_type(str),
+            'field': validate_type(dict)
+        }
+        for game_stat in response_data:
+            assert exp_stat_entity == game_stat
+
+    async def test_game_stats_with_invalid_id_error(self, api_client, token_hdr, finished_game):
+        response = await api_client.get(self.get_game_get_stats_url(-1), headers=token_hdr)
         assert response.status == http.HTTPStatus.NOT_FOUND

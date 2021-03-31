@@ -6,8 +6,8 @@ from aiohttp.web import json_response
 from auth.decorators import login_required
 from core import views
 from tic_tac_toe.enums import TicTacToeErrors
-from tic_tac_toe.models import Game
-from tic_tac_toe.schemas import GameSchema, GameMoveSchema
+from tic_tac_toe.models import Game, GameLog
+from tic_tac_toe.schemas import GameSchema, GameMoveSchema, GameLogSchema
 from tic_tac_toe.services.game import game_service
 
 
@@ -58,4 +58,15 @@ class GameView(views.BaseView):
             )
 
         data = GameSchema().dump(game)
+        return json_response(data=data, status=HTTPStatus.OK)
+
+
+class GameLogView(views.BaseView):
+
+    @login_required
+    async def get(self):
+        game_id: int = int(self.request.match_info['id'])
+        await self.get_object_or_404(Game, game_id)
+        game_logs = await GameLog.query.where(game_id == game_id).gino.all()
+        data = GameLogSchema().dump(game_logs, many=True)
         return json_response(data=data, status=HTTPStatus.OK)

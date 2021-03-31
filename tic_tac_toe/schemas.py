@@ -20,3 +20,8 @@ class GameSchema(marshmallow.Schema):
 class GameMoveSchema(marshmallow.Schema):
     row = marshmallow.fields.Int(required=True)
     col = marshmallow.fields.Int(required=True)
+
+
+class GameLogSchema(marshmallow.Schema):
+    created_at = marshmallow.fields.DateTime(required=True)
+    field = marshmallow.fields.Nested(FieldSchema, required=True)
