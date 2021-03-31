@@ -90,7 +90,7 @@ class TicTacToeService:
         board[row][col] = move_value
         return board
 
-    def calculate_best_move(self, board: Board, depth: int, player_value: types.PlayerValue) -> List[int]:
+    def calculate_best_move(self, board: Board, depth: int, player_value: PlayerValue) -> List[int]:
         """
         Base on minimax algorithm calculates the best possible move for current board state.
         More info could be found here: https://en.wikipedia.org/wiki/Minimax

@@ -2,7 +2,7 @@ from http import HTTPStatus
 
 import pytest
 from alembic.command import upgrade
-from tests.constants import Urls, CREDENTIALS
+from tests.constants import Urls, CREDENTIALS, CREDENTIALS2
 from tests.utils import tmp_database, alembic_config_from_url
 from tests.validators import validate_type
 from yarl import URL
@@ -67,7 +67,7 @@ async def api_client(test_db, aiohttp_client):
 @pytest.fixture
 async def user(api_client):
     """
-    Creates user in database.
+    Creates a user in database.
     """
     response = await api_client.post(Urls.registration.value, json=CREDENTIALS)
     assert response.status == HTTPStatus.CREATED
@@ -81,6 +81,29 @@ async def token_hdr(api_client, user):
     Returns ready to use valid header with auth token.
     """
     response = await api_client.post(Urls.login.value, json=CREDENTIALS)
+    assert response.status == HTTPStatus.OK
+    response = await response.json()
+    assert response['token'] == validate_type(str)
+    yield {'authorization': response['token']}
+
+
+@pytest.fixture
+async def user2(api_client):
+    """
+    Creates a second user in database.
+    """
+    response = await api_client.post(Urls.registration.value, json=CREDENTIALS2)
+    assert response.status == HTTPStatus.CREATED
+    response_data = await response.json()
+    yield response_data
+
+
+@pytest.fixture
+async def token_hdr2(api_client, user2):
+    """
+    Returns ready to use valid header with auth token for second user.
+    """
+    response = await api_client.post(Urls.login.value, json=CREDENTIALS2)
     assert response.status == HTTPStatus.OK
     response = await response.json()
     assert response['token'] == validate_type(str)
