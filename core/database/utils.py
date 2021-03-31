@@ -9,10 +9,8 @@ from configargparse import Namespace
 
 from core import settings
 
-
 PROJECT_PATH = Path(__file__).parent.parent.parent.resolve()
 _ALEMBIC_DSN_KEY = 'sqlalchemy.url'
-
 
 
 def get_gino_database_config(database: str = None) -> Dict:
