@@ -1,5 +1,16 @@
 import os
 
+JWT_EXP_DELTA_SECONDS = 3600
+JWT_ALGORITHM = 'HS256'
+JWT_SECRET = os.getenv('JWT_SECRET', 'secret')
+AUTH_HEADER = 'Authorization'
+AUTH_TOKEN_PREFIX = 'Bearer '
+
+
+MIDDLEWARES = [
+    'auth.middlewares.auth_middleware',
+]
+
 APP_HOST = "0.0.0.0"
 APP_PORT = 8000
 
