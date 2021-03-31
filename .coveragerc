@@ -1,0 +1,11 @@
+[run]
+omit =
+    .venv*
+    */tests/*
+    tests/*
+    main.py
+    conftest.py
+
+[report]
+fail_under = 90
+skip_covered = true

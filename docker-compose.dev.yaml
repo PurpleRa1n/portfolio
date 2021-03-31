@@ -1,0 +1,48 @@
+version: "3.7"
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: portfolio_postgres
+    volumes:
+      - local_postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: portfolio
+      POSTGRES_USER: portfolio
+      POSTGRES_PASSWORD: portfolio
+    ports:
+      - "5432:5432"
+
+  app:
+    image: "app-v0.1:latest"
+    container_name: portfolio_app_dev
+    build:
+      context: .
+      dockerfile: compose/app/Dockerfile
+    restart: on-failure
+    environment:
+      APP_ENVIRONMENT: dev
+    volumes:
+      - type: bind
+        source: ./
+        target: /app
+    depends_on:
+      - postgres
+    expose:
+      - "8000"
+
+  nginx:
+    image: nginx:latest
+    container_name: portfolio_nginx_dev
+    build:
+      context: .
+      dockerfile: compose/nginx/Dockerfile
+    depends_on:
+      - app
+    ports:
+      - "8000:8000"
+
+volumes:
+  local_postgres_data: { }
