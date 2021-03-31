@@ -39,23 +39,14 @@ class GameView(views.BaseView):
         game: Game = await self.get_object_or_404(Game, game_id)
 
         if not game.active:
-            return json_response(
-                data={'error': TicTacToeErrors.game_already_over.value},
-                status=HTTPStatus.BAD_REQUEST
-            )
+            return json_response(data={'error': TicTacToeErrors.game_already_over.value}, status=HTTPStatus.BAD_REQUEST)
 
         if game.user_id != self.request.user.id:
-            return json_response(
-                data={'error': TicTacToeErrors.not_user_game.value},
-                status=HTTPStatus.BAD_REQUEST
-            )
+            return json_response(data={'error': TicTacToeErrors.not_user_game.value}, status=HTTPStatus.BAD_REQUEST)
 
         game, success = await game_service.process_iteration(game, data)
         if not success:
-            return json_response(
-                data={'error': TicTacToeErrors.invalid_turn.value},
-                status=HTTPStatus.BAD_REQUEST
-            )
+            return json_response(data={'error': TicTacToeErrors.invalid_turn.value}, status=HTTPStatus.BAD_REQUEST)
 
         data = GameSchema().dump(game)
         return json_response(data=data, status=HTTPStatus.OK)
