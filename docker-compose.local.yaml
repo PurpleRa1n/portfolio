@@ -1,0 +1,19 @@
+version: '3'
+
+volumes:
+  local_postgres_data: { }
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: portfolio_postgres
+    volumes:
+      - local_postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: portfolio
+      POSTGRES_USER: portfolio
+      POSTGRES_PASSWORD: portfolio
+    ports:
+      - "5432:5432"
