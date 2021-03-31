@@ -4,6 +4,7 @@ from alembic import context
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
+from auth.models import User
 from core.database.orm import db as target_metadata
 from core.database.utils import get_database_dsn
 
