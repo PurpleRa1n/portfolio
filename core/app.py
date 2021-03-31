@@ -8,6 +8,7 @@ from aiohttp.web_app import Application
 from yarl import URL
 
 from auth.routes import routes
+from tic_tac_toe.routes import routes as ttt_routes
 from core import settings
 from core.database.orm import db
 from core.database.utils import get_gino_database_config
@@ -50,7 +51,7 @@ def _init_routes(app: Application) -> Application:
     """
     Initialize all application routes
     """
-    for module_routes in [routes]:
+    for module_routes in [routes, ttt_routes]:
         for method, route, handler in module_routes:
             app.router.add_route(method, route, handler)
     app.router.add_view('/health-check/', HealthCheckView)
