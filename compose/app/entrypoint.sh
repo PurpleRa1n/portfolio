@@ -2,15 +2,13 @@
 
 set -ex
 
-export PYTHONPATH=${PYTHONPATH}:${APP_DIR}
-
-function start_server {
-  python main.py migrate
-  python main.py runserver
+function runserver {
+  python portfolio/main.py migrate
+  python portfolio/main.py runserver
 }
 
 case "$1" in
-    "run-server" ) start_server ;;
+    "runserver" ) runserver ;;
     "bash" ) bash ;;
     "python" ) python ;;
     *) bash ;;
